@@ -42,7 +42,7 @@ const slides = [
         key: '3',
         title: 'TRADE SMARTER',
         text: 'Utilize powerful tools for risk management, backtesting, and portfolio growth.',
-        image: require('../../assets/images/generated-image__14_-removebg-preview.png'),
+        image: require('../../assets/images/unnamed__1_-removebg-preview.png'),
     },
 ];
 
@@ -69,6 +69,10 @@ export default function OnboardingScreen() {
         return (
             <View style={styles.slide}>
                 <View>
+                    <Image
+                        source={require('../../assets/images/cypsniplogo-removebg-preview.png')}
+                        style={styles.logoImage}
+                    />
                     <Text style={styles.titleText}>CRYPSNIP TRADER</Text>
                 </View>
 
@@ -233,5 +237,11 @@ const createStyles = (COLORS: ColorTheme) => StyleSheet.create({
     skipText: {
         color: COLORS.textSecondary,
         fontSize: 14,
+    },
+    logoImage: {
+        height: 50,
+        width: 50,
+        resizeMode: 'contain',
+        marginRight: 9,
     }
 });
