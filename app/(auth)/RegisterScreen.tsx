@@ -12,7 +12,6 @@ import {
     Image,
     useColorScheme,
     ActivityIndicator,
-    Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -22,8 +21,7 @@ import { lightTheme, darkTheme, ColorTheme } from "@/constants/theme";
 import * as ScreenCapture from "expo-screen-capture";
 import { useLanguage } from '@/hooks/useLanguage';
 import LanguageSwitchButton from '@/components/LanguageSwitchButton';
-// ✅ IMPORT ASYNC STORAGE
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Safe for non-sensitive data
 
 import authService from "@/Services/authService";
 import CustomAlert from "../../components/CustomAlert";
@@ -33,13 +31,10 @@ type AuthStackParamList = {
     RegisterScreen: undefined;
     ForgotPasswordScreen: undefined;
     MainTabs: undefined;
-    VerifyOTPScreen: undefined;
+    VerifyOTPScreen: { email: string };
 };
 
-type RegisterNavigationProp = NativeStackNavigationProp<
-    AuthStackParamList,
-    "RegisterScreen"
->;
+type RegisterNavigationProp = NativeStackNavigationProp<AuthStackParamList, "RegisterScreen">;
 
 type FormValidationState = {
     fullName: string;
@@ -58,6 +53,7 @@ type FormTouchedState = {
 export default function RegisterScreen() {
     const { t, loading: languageLoading } = useLanguage();
 
+    // ✅ SECURITY: Prevent screenshots to block malware
     useFocusEffect(
         useCallback(() => {
             ScreenCapture.preventScreenCaptureAsync();
@@ -77,8 +73,6 @@ export default function RegisterScreen() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Alert State
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertConfig, setAlertConfig] = useState({
         title: "",
@@ -109,18 +103,16 @@ export default function RegisterScreen() {
     const { COLORS } = currentScheme;
     const dynamicStyles = createStyles(COLORS);
 
-    // --- 1. PERSISTENCE: LOAD DRAFT ON MOUNT ---
+    // --- 1. PERSISTENCE: LOAD DRAFT (Safe Data Only) ---
     useEffect(() => {
         const loadDraft = async () => {
             try {
                 const savedDraft = await AsyncStorage.getItem('registerDraft');
                 if (savedDraft) {
-                    const { fullName, email, password } = JSON.parse(savedDraft);
-                    // We restore the fields so the user doesn't lose progress
+                    const { fullName, email } = JSON.parse(savedDraft);
+                    // ✅ Restore only safe fields
                     if (fullName) setFullName(fullName);
                     if (email) setEmail(email);
-                    if (password) setPassword(password);
-                    // We don't save confirmPassword usually, but you can if you want
                 }
             } catch (error) {
                 console.log("Failed to load draft", error);
@@ -129,30 +121,25 @@ export default function RegisterScreen() {
         loadDraft();
     }, []);
 
-    // --- 2. PERSISTENCE: SAVE DRAFT ON CHANGE ---
+    // --- 2. PERSISTENCE: SAVE DRAFT (Safe Data Only) ---
     useEffect(() => {
         const saveDraft = async () => {
-            const draft = { fullName, email, password };
+            // ✅ SECURITY FIX: Never save password in AsyncStorage
+            const draft = { fullName, email };
             await AsyncStorage.setItem('registerDraft', JSON.stringify(draft));
         };
-        // Debounce could be used here, but simple save is fine for now
         saveDraft();
-    }, [fullName, email, password]);
+    }, [fullName, email]); // Removed password from dependencies
 
-
-    // --- 3. INSTANT VALIDATION (THE GLOW FIX) ---
-    // This runs every time you type a single character
+    // --- 3. INSTANT VALIDATION ---
     useEffect(() => {
         const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         const isPasswordValid = password.length >= 6;
         const isConfirmValid = confirmPassword === password && confirmPassword.length > 0;
         const isNameValid = fullName.trim().length > 0;
 
-        // If all are true, button glows instantly
         setIsValid(isEmailValid && isPasswordValid && isConfirmValid && isNameValid);
-
     }, [fullName, email, password, confirmPassword]);
-
 
     const showAlert = (title: string, message: string, type: "success" | "error", onClose: () => void = () => {}) => {
         setAlertConfig({ title, message, type, onClose });
@@ -161,12 +148,9 @@ export default function RegisterScreen() {
 
     const handleAlertClose = () => {
         setAlertVisible(false);
-        if (alertConfig.onClose) {
-            alertConfig.onClose();
-        }
+        if (alertConfig.onClose) alertConfig.onClose();
     };
 
-    // Keep individual field validation for showing Error Text (red text)
     const validateField = (field: keyof FormValidationState) => {
         const newErrors: FormValidationState = { ...errors };
 
@@ -190,14 +174,11 @@ export default function RegisterScreen() {
             else if (password.trim() !== confirmPassword.trim()) newErrors.confirmPassword = t('passwordMismatch');
             else newErrors.confirmPassword = "";
         }
-
         setErrors(newErrors);
     };
 
     const handleSignup = async () => {
-        // Final check before sending
         if (!isValid) return;
-
         setIsSubmitting(true);
 
         try {
@@ -207,11 +188,11 @@ export default function RegisterScreen() {
                 password
             });
 
-            // ✅ CLEAR DRAFT ON SUCCESS
+            // ✅ Clear draft on success
             await AsyncStorage.removeItem('registerDraft');
 
             showAlert("Success", message, "success", () => {
-                navigation.replace("VerifyOTPScreen");
+                navigation.replace("VerifyOTPScreen", { email: email });
             });
 
         } catch (error: any) {
@@ -236,53 +217,31 @@ export default function RegisterScreen() {
     }
 
     return (
-        <SafeAreaView
-            style={[dynamicStyles.safeArea, { backgroundColor: COLORS.background }]}
-            edges={['top', 'bottom', 'left', 'right']}
-        >
-            <StatusBar
-                barStyle={isDarkMode ? "light-content" : "dark-content"}
-                backgroundColor={COLORS.background}
-            />
+        <SafeAreaView style={[dynamicStyles.safeArea, { backgroundColor: COLORS.background }]} edges={['top', 'bottom', 'left', 'right']}>
+            <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={COLORS.background} />
 
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={dynamicStyles.container}
-            >
-                <ScrollView
-                    contentContainerStyle={dynamicStyles.scrollContent}
-                    showsVerticalScrollIndicator={false}
-                >
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={dynamicStyles.container}>
+                <ScrollView contentContainerStyle={dynamicStyles.scrollContent} showsVerticalScrollIndicator={false}>
                     <View style={dynamicStyles.header}>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={dynamicStyles.backButton}>
                             <ArrowLeft color={COLORS.textPrimary} size={24} />
                         </TouchableOpacity>
                         <View style={dynamicStyles.inlineTitleWrapper}>
-                            <Text style={[dynamicStyles.inlineTitleText, { color: COLORS.textPrimary }]}>
-                                {t('registerTitle')}
-                            </Text>
+                            <Text style={[dynamicStyles.inlineTitleText, { color: COLORS.textPrimary }]}>{t('registerTitle')}</Text>
                         </View>
                         <LanguageSwitchButton colors={COLORS} />
                     </View>
 
                     <View style={dynamicStyles.titleContainer}>
                         <View style={dynamicStyles.brandRow}>
-                            <Image
-                                source={require("../../assets/images/cypsniplogo-removebg-preview.png")}
-                                style={dynamicStyles.logoImage}
-                                resizeMode="contain"
-                            />
-                            <Text style={[dynamicStyles.logoText, { color: COLORS.textPrimary }]}>
-                                Crypsnip
-                            </Text>
+                            <Image source={require("../../assets/images/cypsniplogo-removebg-preview.png")} style={dynamicStyles.logoImage} resizeMode="contain" />
+                            <Text style={[dynamicStyles.logoText, { color: COLORS.textPrimary }]}>Crypsnip</Text>
                         </View>
-                        <Text style={[dynamicStyles.subtitle, { color: COLORS.textSecondary }]}>
-                            {t('thanksForJoining')}
-                        </Text>
+                        <Text style={[dynamicStyles.subtitle, { color: COLORS.textSecondary }]}>{t('thanksForJoining')}</Text>
                     </View>
 
                     <View style={dynamicStyles.formContainer}>
-                        {/* INPUTS */}
+                        {/* Name Input */}
                         <View style={dynamicStyles.inputGroup}>
                             <Text style={[dynamicStyles.label, { color: COLORS.textPrimary }]}>{t('fullNameLabel')}</Text>
                             <View style={[dynamicStyles.inputContainer, { backgroundColor: COLORS.surface, borderColor: touched.fullName && errors.fullName ? COLORS.error : COLORS.border }]}>
@@ -300,6 +259,7 @@ export default function RegisterScreen() {
                             {touched.fullName && errors.fullName !== "" && <Text style={[dynamicStyles.errorText, { color: COLORS.error }]}>{errors.fullName}</Text>}
                         </View>
 
+                        {/* Email Input */}
                         <View style={dynamicStyles.inputGroup}>
                             <Text style={[dynamicStyles.label, { color: COLORS.textPrimary }]}>{t('emailLabel')}</Text>
                             <View style={[dynamicStyles.inputContainer, { backgroundColor: COLORS.surface, borderColor: touched.email && errors.email ? COLORS.error : COLORS.border }]}>
@@ -318,6 +278,7 @@ export default function RegisterScreen() {
                             {touched.email && errors.email !== "" && <Text style={[dynamicStyles.errorText, { color: COLORS.error }]}>{errors.email}</Text>}
                         </View>
 
+                        {/* Password Input */}
                         <View style={dynamicStyles.inputGroup}>
                             <Text style={[dynamicStyles.label, { color: COLORS.textPrimary }]}>{t('passwordLabel')}</Text>
                             <View style={[dynamicStyles.inputContainer, { backgroundColor: COLORS.surface, borderColor: touched.password && errors.password ? COLORS.error : COLORS.border }]}>
@@ -338,6 +299,7 @@ export default function RegisterScreen() {
                             {touched.password && errors.password !== "" && <Text style={[dynamicStyles.errorText, { color: COLORS.error }]}>{errors.password}</Text>}
                         </View>
 
+                        {/* Confirm Password */}
                         <View style={dynamicStyles.inputGroup}>
                             <Text style={[dynamicStyles.label, { color: COLORS.textPrimary }]}>{t('confirmPasswordLabel')}</Text>
                             <View style={[dynamicStyles.inputContainer, { backgroundColor: COLORS.surface, borderColor: touched.confirmPassword && errors.confirmPassword ? COLORS.error : COLORS.border }]}>
@@ -360,28 +322,14 @@ export default function RegisterScreen() {
 
                         {/* Sign Up Button */}
                         <TouchableOpacity
-                            style={[
-                                dynamicStyles.signupButton,
-                                {
-                                    backgroundColor: isValid && !isSubmitting ? COLORS.primary : COLORS.surface,
-                                    borderWidth: isValid && !isSubmitting ? 0 : 1,
-                                    borderColor: COLORS.border,
-                                },
-                            ]}
+                            style={[dynamicStyles.signupButton, { backgroundColor: isValid && !isSubmitting ? COLORS.primary : COLORS.surface, borderWidth: isValid && !isSubmitting ? 0 : 1, borderColor: COLORS.border }]}
                             onPress={handleSignup}
                             disabled={!isValid || isSubmitting}
                         >
                             {isSubmitting ? (
                                 <ActivityIndicator color={isValid ? "#FFFFFF" : COLORS.textSecondary} />
                             ) : (
-                                <Text
-                                    style={[
-                                        dynamicStyles.signupButtonText,
-                                        { color: isValid ? "#FFFFFF" : COLORS.textSecondary },
-                                    ]}
-                                >
-                                    {isValid ? t('registerButton') : t('enterDetails')}
-                                </Text>
+                                <Text style={[dynamicStyles.signupButtonText, { color: isValid ? "#FFFFFF" : COLORS.textSecondary }]}>{isValid ? t('registerButton') : t('enterDetails')}</Text>
                             )}
                         </TouchableOpacity>
 
@@ -391,11 +339,7 @@ export default function RegisterScreen() {
                             <View style={[dynamicStyles.divider, { backgroundColor: COLORS.border }]} />
                         </View>
 
-                        <TouchableOpacity
-                            style={[dynamicStyles.googleButton, { backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border }]}
-                            onPress={handleGoogleSignup}
-                            disabled={isSubmitting}
-                        >
+                        <TouchableOpacity style={[dynamicStyles.googleButton, { backgroundColor: COLORS.surface, borderWidth: 1, borderColor: COLORS.border }]} onPress={handleGoogleSignup} disabled={isSubmitting}>
                             <Image source={require("../../assets/images/googlelo-removebg-preview.png")} style={dynamicStyles.googleIcon} resizeMode="contain" />
                             <Text style={[dynamicStyles.googleButtonText, { color: COLORS.textPrimary }]}>{t('googleSignUp')}</Text>
                         </TouchableOpacity>
@@ -409,63 +353,43 @@ export default function RegisterScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-
-            <CustomAlert
-                visible={alertVisible}
-                title={alertConfig.title}
-                message={alertConfig.message}
-                type={alertConfig.type}
-                onClose={handleAlertClose}
-                colors={COLORS}
-            />
+            <CustomAlert visible={alertVisible} title={alertConfig.title} message={alertConfig.message} type={alertConfig.type} onClose={handleAlertClose} colors={COLORS} />
         </SafeAreaView>
     );
 }
-
-const createStyles = (colors: ColorTheme) =>
-    StyleSheet.create({
-        safeArea: { flex: 1 },
-        container: { flex: 1 },
-        loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-        inlineTitleWrapper: { flex: 1, alignItems: 'center' },
-        inlineTitleText: { fontSize: 18, fontWeight: '700', letterSpacing: 0.5 },
-        scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40, justifyContent: "flex-start" },
-        header: { marginTop: 20, marginBottom: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-        backButton: { padding: 8, marginLeft: -8, width: 40 },
-        titleContainer: { marginTop: 50, marginBottom: 40, alignItems: "center" },
-        titleTextWrapper: { display: 'none' },
-        titleText: { fontSize: 32, fontWeight: "800", letterSpacing: 0.5 },
-        brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-        logoImage: { width: 50, height: 50, marginRight: 8 },
-        logoText: { fontSize: 32, fontWeight: "800", letterSpacing: 0.5 },
-        subtitle: { fontSize: 16, fontWeight: "400" },
-        formContainer: { width: "100%" },
-        inputGroup: { marginBottom: 20 },
-        label: { fontSize: 14, fontWeight: "600", marginBottom: 8, marginLeft: 4 },
-        inputContainer: { flexDirection: "row", alignItems: "center", borderRadius: 12, height: 56, paddingHorizontal: 16, borderWidth: 1 },
-        input: { flex: 1, fontSize: 16, height: "100%" },
-        eyeIcon: { padding: 8 },
-        signupButton: {
-            height: 56,
-            borderRadius: 28,
-            justifyContent: "center",
-            alignItems: "center",
-            marginBottom: 24,
-            shadowColor: colors.primary,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 6
-        },
-        signupButtonText: { fontSize: 16, fontWeight: "700" },
-        dividerContainer: { flexDirection: "row", alignItems: "center", marginBottom: 24, paddingHorizontal: 10 },
-        divider: { flex: 1, height: 1 },
-        dividerText: { paddingHorizontal: 16, fontSize: 14 },
-        googleButton: { height: 56, borderRadius: 28, justifyContent: "center", alignItems: "center", flexDirection: "row", marginBottom: 20 },
-        googleIcon: { width: 24, height: 24, marginRight: 12 },
-        googleButtonText: { fontSize: 16, fontWeight: "600" },
-        footer: { flexDirection: "row", justifyContent: "center", marginTop: 20 },
-        footerText: { fontSize: 14 },
-        footerLink: { fontSize: 14, fontWeight: "700", marginLeft: 4 },
-        errorText: { fontSize: 13, marginTop: 4, marginLeft: 4 },
-    });
+// ... Styles remain exactly the same as previous RegisterScreen ...
+const createStyles = (colors: ColorTheme) => StyleSheet.create({
+    safeArea: { flex: 1 },
+    container: { flex: 1 },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    inlineTitleWrapper: { flex: 1, alignItems: 'center' },
+    inlineTitleText: { fontSize: 18, fontWeight: '700', letterSpacing: 0.5 },
+    scrollContent: { flexGrow: 1, paddingHorizontal: 24, paddingBottom: 40, justifyContent: "flex-start" },
+    header: { marginTop: 20, marginBottom: 20, flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+    backButton: { padding: 8, marginLeft: -8, width: 40 },
+    titleContainer: { marginTop: 50, marginBottom: 40, alignItems: "center" },
+    titleTextWrapper: { display: 'none' },
+    titleText: { fontSize: 32, fontWeight: "800", letterSpacing: 0.5 },
+    brandRow: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+    logoImage: { width: 50, height: 50, marginRight: 8 },
+    logoText: { fontSize: 32, fontWeight: "800", letterSpacing: 0.5 },
+    subtitle: { fontSize: 16, fontWeight: "400" },
+    formContainer: { width: "100%" },
+    inputGroup: { marginBottom: 20 },
+    label: { fontSize: 14, fontWeight: "600", marginBottom: 8, marginLeft: 4 },
+    inputContainer: { flexDirection: "row", alignItems: "center", borderRadius: 12, height: 56, paddingHorizontal: 16, borderWidth: 1 },
+    input: { flex: 1, fontSize: 16, height: "100%" },
+    eyeIcon: { padding: 8 },
+    signupButton: { height: 56, borderRadius: 28, justifyContent: "center", alignItems: "center", marginBottom: 24, shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 6 },
+    signupButtonText: { fontSize: 16, fontWeight: "700" },
+    dividerContainer: { flexDirection: "row", alignItems: "center", marginBottom: 24, paddingHorizontal: 10 },
+    divider: { flex: 1, height: 1 },
+    dividerText: { paddingHorizontal: 16, fontSize: 14 },
+    googleButton: { height: 56, borderRadius: 28, justifyContent: "center", alignItems: "center", flexDirection: "row", marginBottom: 20 },
+    googleIcon: { width: 24, height: 24, marginRight: 12 },
+    googleButtonText: { fontSize: 16, fontWeight: "600" },
+    footer: { flexDirection: "row", justifyContent: "center", marginTop: 20 },
+    footerText: { fontSize: 14 },
+    footerLink: { fontSize: 14, fontWeight: "700", marginLeft: 4 },
+    errorText: { fontSize: 13, marginTop: 4, marginLeft: 4 },
+});

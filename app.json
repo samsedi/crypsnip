@@ -9,21 +9,35 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "ExpoLocalization_supportsRTL": true
+      }
     },
     "android": {
+      "package": "com.sedisamuel.crypsnip",
       "adaptiveIcon": {
         "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/cypsniplogo-removebg-preview.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": true
+      "predictiveBackGestureEnabled": true,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.YOUR_IOS_ID_HERE"
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -43,10 +57,15 @@
           "androidAppLanguage": "en"
         }
       ],
-      "expo-location"
+      "expo-location",
+      "expo-web-browser"
     ],
     "extra": {
-      "supportsRTL": true
+      "supportsRTL": true,
+      "router": {},
+      "eas": {
+        "projectId": "d161498c-1c86-45d8-bacc-8c848516cf4e"
+      }
     },
     "experiments": {
       "typedRoutes": true,

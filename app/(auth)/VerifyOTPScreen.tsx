@@ -11,47 +11,75 @@ import {
     ScrollView,
     Image,
     useColorScheme,
+    ActivityIndicator
 } from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ArrowLeft } from "lucide-react-native";
 import { lightTheme, darkTheme, ColorTheme } from "@/constants/theme";
+import authService from "@/Services/authService";
+
+// ✅ Import Custom Alert
+import CustomAlert from "../../components/CustomAlert";
 
 type AuthStackParamList = {
     LoginScreen: undefined;
     RegisterScreen: undefined;
-    VerifyOTPScreen: undefined;
+    VerifyOTPScreen: { email: string };
     MainTabs: undefined;
 };
 
+type VerifyScreenRouteProp = RouteProp<AuthStackParamList, "VerifyOTPScreen">;
 type VerifyOTPNavigationProp = NativeStackNavigationProp<AuthStackParamList, "VerifyOTPScreen">;
 
 export default function VerifyOTPScreen() {
     const navigation = useNavigation<VerifyOTPNavigationProp>();
+
+    // 1. GET THE EMAIL PASSED FROM REGISTER SCREEN
+    const route = useRoute<VerifyScreenRouteProp>();
+    const { email } = route.params;
+
     const [otp, setOtp] = useState(["", "", "", ""]);
+    const [loading, setLoading] = useState(false);
     const inputRefs = useRef<TextInput[]>([]);
+
+    // ✅ Alert State
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [alertConfig, setAlertConfig] = useState({
+        title: "",
+        message: "",
+        type: "success" as "success" | "error",
+        onClose: () => {}
+    });
 
     // Detect theme
     const scheme = useColorScheme();
     const isDarkMode = scheme === "dark";
-
-    // Select the active theme based on the scheme
     const currentTheme = isDarkMode ? darkTheme : lightTheme;
     const { COLORS } = currentTheme;
-
-    // Create styles with current theme colors
     const dynamicStyles = createStyles(COLORS);
 
+    // ✅ Helper to show Custom Alert
+    const showAlert = (title: string, message: string, type: "success" | "error", onClose: () => void = () => {}) => {
+        setAlertConfig({ title, message, type, onClose });
+        setAlertVisible(true);
+    };
+
+    const handleAlertClose = () => {
+        setAlertVisible(false);
+        if (alertConfig.onClose) {
+            alertConfig.onClose();
+        }
+    };
+
     const handleOtpChange = (value: string, index: number) => {
-        // Only allow numbers
         if (!/^\d*$/.test(value)) return;
 
         const newOtp = [...otp];
         newOtp[index] = value;
         setOtp(newOtp);
 
-        // Move to next input
         if (value && index < 3) {
             inputRefs.current[index + 1]?.focus();
         }
@@ -60,13 +88,11 @@ export default function VerifyOTPScreen() {
     const handleKeyPress = (key: string, index: number) => {
         if (key === "Backspace") {
             if (!otp[index] && index > 0) {
-                // Move to previous input if current is empty
                 inputRefs.current[index - 1]?.focus();
                 const newOtp = [...otp];
                 newOtp[index - 1] = "";
                 setOtp(newOtp);
             } else {
-                // Clear current input
                 const newOtp = [...otp];
                 newOtp[index] = "";
                 setOtp(newOtp);
@@ -74,18 +100,42 @@ export default function VerifyOTPScreen() {
         }
     };
 
-    const handleVerifyOtp = () => {
+    // ✅ VERIFY LOGIC WITH CUSTOM ALERT
+    const handleVerifyOtp = async () => {
         const otpCode = otp.join("");
-        if (otpCode.length === 4) {
-            console.log("OTP Verified:", otpCode);
-            // navigation.replace('MainTabs');
-        } else {
-            console.log("Please enter all 4 digits");
+
+        if (otpCode.length !== 4) {
+            showAlert("Invalid Input", "Please enter the full 4-digit code.", "error");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await authService.verifyOtp({ email, otp: otpCode });
+
+            // Success: Show Alert -> Then Navigate
+            showAlert("Success", "Account verified! Please login.", "success", () => {
+                navigation.replace("LoginScreen");
+            });
+
+        } catch (error: any) {
+            showAlert("Verification Failed", error.message || "Invalid OTP", "error");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleResendOtp = () => {
-        console.log("Resend OTP pressed");
+    // ✅ RESEND LOGIC WITH CUSTOM ALERT
+    const handleResendOtp = async () => {
+        setLoading(true);
+        try {
+            await authService.resendOtp(email);
+            showAlert("Code Sent", `A new code has been sent to ${email}`, "success");
+        } catch (error: any) {
+            showAlert("Error", error.message || "Could not resend OTP", "error");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const isOtpComplete = otp.every((digit) => digit !== "");
@@ -131,7 +181,8 @@ export default function VerifyOTPScreen() {
                         </View>
 
                         <Text style={[dynamicStyles.subtitle, { color: COLORS.textSecondary }]}>
-                            Enter the 4-digit code sent to your email
+                            Enter the 4-digit code sent to{"\n"}
+                            <Text style={{ fontWeight: "700", color: COLORS.primary }}>{email}</Text>
                         </Text>
                     </View>
 
@@ -159,6 +210,7 @@ export default function VerifyOTPScreen() {
                                     onKeyPress={({ nativeEvent }) => handleKeyPress(nativeEvent.key, index)}
                                     placeholder="0"
                                     placeholderTextColor={COLORS.textTertiary}
+                                    editable={!loading}
                                 />
                             ))}
                         </View>
@@ -172,9 +224,13 @@ export default function VerifyOTPScreen() {
                                 },
                             ]}
                             onPress={handleVerifyOtp}
-                            disabled={!isOtpComplete}
+                            disabled={!isOtpComplete || loading}
                         >
-                            <Text style={dynamicStyles.verifyButtonText}>Verify OTP</Text>
+                            {loading ? (
+                                <ActivityIndicator color="#FFFFFF" />
+                            ) : (
+                                <Text style={dynamicStyles.verifyButtonText}>Verify OTP</Text>
+                            )}
                         </TouchableOpacity>
 
                         {/* Resend OTP */}
@@ -182,7 +238,7 @@ export default function VerifyOTPScreen() {
                             <Text style={[dynamicStyles.resendText, { color: COLORS.textSecondary }]}>
                                 Didn't receive the code?
                             </Text>
-                            <TouchableOpacity onPress={handleResendOtp}>
+                            <TouchableOpacity onPress={handleResendOtp} disabled={loading}>
                                 <Text style={[dynamicStyles.resendLink, { color: COLORS.primary }]}>
                                     Resend OTP
                                 </Text>
@@ -191,6 +247,16 @@ export default function VerifyOTPScreen() {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+
+            {/* ✅ Custom Alert Component */}
+            <CustomAlert
+                visible={alertVisible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                onClose={handleAlertClose}
+                colors={COLORS}
+            />
         </SafeAreaView>
     );
 }
@@ -207,15 +273,13 @@ const createStyles = (colors: ColorTheme) =>
             flexGrow: 1,
             paddingHorizontal: 24,
             paddingBottom: 40,
-
         },
         header: {
             marginTop: 80,
             marginBottom: 70,
             flexDirection: "row",
             alignItems: "center",
-            marginLeft:70,
-
+            marginLeft: 70,
         },
         backButton: {
             padding: 8,
@@ -225,7 +289,6 @@ const createStyles = (colors: ColorTheme) =>
             fontSize: 32,
             fontWeight: "800",
             letterSpacing: 0.5,
-
         },
         titleContainer: {
             marginBottom: 40,
