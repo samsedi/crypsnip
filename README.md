@@ -1,5 +1,6 @@
+
 <div align="center">
-  <img src="./assets/images/1000084233.png" width="120" alt="Crypsnip Logo" />
+  <img src="./assets/images/Cypsniplogo-removebg-preview.png" width="120" alt="Crypsnip Logo" />
   <h1>🚀 Crypsnip</h1>
   <p><b>Anti-Rug & Transparency-First Memecoin Launchpad</b></p>
   <p><i>Protecting retail investors from bot-infested launches and rugpull-prone ecosystems.</i></p>
@@ -41,15 +42,13 @@ The **Coin Details Page** acts as a security hub for every asset:
 
 ### 📸 App Architecture & Preview
 <div align="center">
-  <p><i>Live Charting & Real-Time Controls</i></p>
-  <img src="./assets/images/details_chart.png" width="200" />
-  <img src="./assets/images/details_about.png" width="200" />
-  <img src="./assets/images/details_controls.png" width="200" />
+  <p><i>Live Market Analytics & Coin Details</i></p>
+  <img src="./assets/images/Screenshot_20260124-062201~2.png" width="250" alt="Live Charting and Market Data" />
+  <img src="./assets/images/Screenshot_20260113-090929.png" width="250" alt="Coin Security Details" />
   <br />
-  <p><i>Authentication & Identity Security</i></p>
-  <img src="./assets/images/1000073830.png" width="200" />
-  <img src="./assets/images/1000077430.png" width="200" />
-  <img src="./assets/images/1000082458.png" width="200" />
+  <p><i>Authentication Flow & AI-Driven Signals</i></p>
+  <img src="./assets/images/Screenshot_20251215-153122.png" width="250" alt="JWT & OTP Verification" />
+  <img src="./assets/images/Screenshot_20251204-025117.png" width="250" alt="AI Market Signals" />
 </div>
 
 <hr />
