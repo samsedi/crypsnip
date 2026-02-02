@@ -1,50 +1,61 @@
-# Welcome to your Expo app 👋
+<div align="center">
+  <img src="./assets/images/1000084233.png" width="120" alt="Crypsnip Logo" />
+  <h1>🚀 Crypsnip</h1>
+  <p><b>Anti-Rug & Transparency-First Memecoin Launchpad</b></p>
+  <p><i>Protecting retail investors from bot-infested launches and rugpull-prone ecosystems.</i></p>
+</div>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+<hr />
 
-## Get started
+### 📖 Project Drive
+Crypsnip was built to solve the "insider" advantage in the memecoin market. While other platforms are plagued by "sniper bots" and "rugpulls," Crypsnip aims to provide a **level playing field** by ensuring transparency through contract verification and real-time liquidity monitoring.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+### 🛠️ Technical Stack & Performance
+* **Mobile Frontend:** High-performance **React Native** UI featuring **Skia-powered** interactive financial charts and custom-built timeframe controls.
+* **Backend Engineering:** Scalable **Spring Boot** microservices architecture utilizing **Rate Limiting (Bucket4j)** and **Asynchronous Workers** to ensure stability during high-volatility market launches.
+* **Real-Time Orchestration:** Integrated **Binance WebSockets API** and other 3rd-party providers for sub-second price and candle data accuracy.
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+### ✨ Features Currently Built
+<ul>
+  <li><b>Secure Onboarding:</b> Multi-layered authentication flow featuring <b>JWT security</b> and <b>4-digit Email OTP</b> verification to ensure platform integrity.</li>
+  <li><b>Transparency Dashboard:</b> Real-time market tracking for major assets (BTC, ETH, SOL) and emerging memecoins with <b>Live Trade</b> feed integration.</li>
+  <li><b>Anti-Rug Logic (In-Dev):</b> Core infrastructure for monitoring developer liquidity locks and contract renouncements to flag high-risk launches.</li>
+  <li><b>Advanced Charting:</b> Interactive <b>Candle vs. Line</b> toggles with multi-timeframe support (1m, 15m, 1h, 1w) designed for professional-grade market analysis.</li>
+</ul>
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### 📊 Transparent Coin Analytics
+The **Coin Details Page** acts as a security hub for every asset:
+<ul>
+  <li><b>Market Statistics:</b> Direct access to Market Cap, Volume (24h), Circulating Supply, and Liquidity metrics.</li>
+  <li><b>Community Verification:</b> Integrated official brand links (X, Telegram, Website) and Contract Address "Copy-to-Clipboard" functionality.</li>
+  <li><b>Live Trade Feed:</b> Real-time visualization of buy/sell pressure to help users detect artificial volume or wash-trading patterns.</li>
+</ul>
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+### 📸 App Architecture & Preview
+<div align="center">
+  <p><i>Live Charting & Real-Time Controls</i></p>
+  <img src="./assets/images/details_chart.png" width="200" />
+  <img src="./assets/images/details_about.png" width="200" />
+  <img src="./assets/images/details_controls.png" width="200" />
+  <br />
+  <p><i>Authentication & Identity Security</i></p>
+  <img src="./assets/images/1000073830.png" width="200" />
+  <img src="./assets/images/1000077430.png" width="200" />
+  <img src="./assets/images/1000082458.png" width="200" />
+</div>
 
-When you're ready, run:
+<hr />
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+<div align="center">
+  <p>Developed by <b>Sedi Samuel</b></p>
+  <p>Computer Science Student | Covenant University</p>
+  <p><i>Building for a more transparent decentralized future.</i></p>
+</div>
