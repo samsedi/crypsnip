@@ -1,6 +1,6 @@
 <div align="center">
   <img src="./assets/images/cypsniplogo-removebg-preview.png" width="120" alt="Crypsnip Logo" />
-  <h1>🚀 Crypsnip</h1>
+  <h1> Crypsnip</h1>
   <p><b>Anti-Rug & Transparency-First Memecoin Launchpad</b></p>
   <p><i>Protecting retail investors from bot-infested launches and rugpull-prone ecosystems.</i></p>
 </div>
