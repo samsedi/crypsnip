@@ -12,43 +12,40 @@ Crypsnip was built to solve the "insider" advantage in the memecoin market. Whil
 
 ---
 
-### 🛠️ Technical Stack & Performance
+### 🛠️ Technical Stack
 * **Mobile Frontend:** High-performance **React Native** UI featuring **Skia-powered** interactive financial charts.
 * **Backend Engineering:** Scalable **Spring Boot** microservices utilizing **Rate Limiting (Bucket4j)** and **Asynchronous Workers**.
-* **Real-Time Orchestration:** Integrated **Binance WebSockets API** for sub-second price and candle data accuracy.
+* **Real-Time Orchestration:** Integrated **Binance WebSockets API** for sub-second price accuracy.
 
 ---
 
 ### ✨ Core Features & Visuals
 
 #### 1. Secure Onboarding & Authentication
-Multi-layered flow featuring **JWT security** and **4-digit Email OTP** verification.
-<div align="center">
-  <img src="./assets/images/Screenshot_20251204-025109.png" width="200" alt="Onboarding Screen" />
-  <img src="./assets/images/Screenshot_20251129-093513.png" width="200" alt="Register Screen" />
-  <img src="./assets/images/Screenshot_20251129-094259.png" width="200" alt="Login Screen" />
-</div>
+The app features a multi-layered flow with **JWT security** and **4-digit Email OTP** verification.
+
+| Onboarding | Sign Up | Login |
+| :---: | :---: | :---: |
+| <img src="./assets/images/Screenshot_20251204-025109.png" width="220" /> | <img src="./assets/images/Screenshot_20251129-093513.png" width="220" /> | <img src="./assets/images/Screenshot_20251129-094259.png" width="220" /> |
 
 #### 2. Transparency Dashboard
-Real-time market tracking for BTC, ETH, SOL, and emerging memecoins. Includes **Live Trade** feeds and interactive **Skia charts** with multi-timeframe support.
-<div align="center">
-  <img src="./assets/images/Screenshot_20260124-062201.png" width="250" alt="Home Screen Market Data" />
-  <img src="./assets/images/Screenshot_20251204-025117.png" width="250" alt="AI Market Signals" />
-</div>
+Real-time tracking for BTC, ETH, SOL, and emerging memecoins with live trade feed integration.
 
-#### 3. Coin Analytics & Anti-Rug Logic
-The security hub for every asset, monitoring developer liquidity locks and contract renouncements.
-<div align="center">
-  <img src="./assets/images/Screenshot_20260113-090929.png" width="250" alt="Coin Security Details" />
-  <img src="./assets/images/Screenshot_20251215-153122.png" width="250" alt="Security Verification" />
-</div>
+| Market Overview | AI Signals |
+| :---: | :---: |
+| <img src="./assets/images/Screenshot_20260124-062201.png" width="300" /> | <img src="./assets/images/Screenshot_20251204-025117.png" width="300" /> |
+
+#### 3. Coin Analytics & Verification
+Core infrastructure for monitoring developer liquidity locks and contract renouncements to flag high-risk launches.
+
+| Security Verification | Email OTP Flow |
+| :---: | :---: |
+| <img src="./assets/images/Screenshot_20260113-090929.png" width="300" /> | <img src="./assets/images/Screenshot_20251215-153122.png" width="300" /> |
 
 ---
 
 ### 📊 System Architecture
-
-
-Crypsnip utilizes a decoupled architecture to maintain high availability during peak market volatility. The Spring Boot backend manages heavy lifting like security audits and rate limiting, while the React Native frontend handles smooth data visualization.
+Crypsnip utilizes a decoupled architecture to maintain high availability during peak market volatility. The **Spring Boot** backend manages heavy lifting like security audits and rate limiting, while the **React Native** frontend handles smooth data visualization.
 
 ---
 
