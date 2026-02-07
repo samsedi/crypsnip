@@ -1,12 +1,11 @@
-
 <div align="center">
-  <img src="./assets/images/Cypsniplogo-removebg-preview.png" width="120" alt="Crypsnip Logo" />
+  <img src="./assets/images/cypsniplogo-removebg-preview.png" width="120" alt="Crypsnip Logo" />
   <h1>🚀 Crypsnip</h1>
   <p><b>Anti-Rug & Transparency-First Memecoin Launchpad</b></p>
   <p><i>Protecting retail investors from bot-infested launches and rugpull-prone ecosystems.</i></p>
 </div>
 
-<hr />
+---
 
 ### 📖 Project Drive
 Crypsnip was built to solve the "insider" advantage in the memecoin market. While other platforms are plagued by "sniper bots" and "rugpulls," Crypsnip aims to provide a **level playing field** by ensuring transparency through contract verification and real-time liquidity monitoring.
@@ -14,47 +13,46 @@ Crypsnip was built to solve the "insider" advantage in the memecoin market. Whil
 ---
 
 ### 🛠️ Technical Stack & Performance
-* **Mobile Frontend:** High-performance **React Native** UI featuring **Skia-powered** interactive financial charts and custom-built timeframe controls.
-* **Backend Engineering:** Scalable **Spring Boot** microservices architecture utilizing **Rate Limiting (Bucket4j)** and **Asynchronous Workers** to ensure stability during high-volatility market launches.
-* **Real-Time Orchestration:** Integrated **Binance WebSockets API** and other 3rd-party providers for sub-second price and candle data accuracy.
+* **Mobile Frontend:** High-performance **React Native** UI featuring **Skia-powered** interactive financial charts.
+* **Backend Engineering:** Scalable **Spring Boot** microservices utilizing **Rate Limiting (Bucket4j)** and **Asynchronous Workers**.
+* **Real-Time Orchestration:** Integrated **Binance WebSockets API** for sub-second price and candle data accuracy.
 
 ---
 
-### ✨ Features Currently Built
-<ul>
-  <li><b>Secure Onboarding:</b> Multi-layered authentication flow featuring <b>JWT security</b> and <b>4-digit Email OTP</b> verification to ensure platform integrity.</li>
-  <li><b>Transparency Dashboard:</b> Real-time market tracking for major assets (BTC, ETH, SOL) and emerging memecoins with <b>Live Trade</b> feed integration.</li>
-  <li><b>Anti-Rug Logic (In-Dev):</b> Core infrastructure for monitoring developer liquidity locks and contract renouncements to flag high-risk launches.</li>
-  <li><b>Advanced Charting:</b> Interactive <b>Candle vs. Line</b> toggles with multi-timeframe support (1m, 15m, 1h, 1w) designed for professional-grade market analysis.</li>
-</ul>
+### ✨ Core Features & Visuals
 
----
-
-### 📊 Transparent Coin Analytics
-The **Coin Details Page** acts as a security hub for every asset:
-<ul>
-  <li><b>Market Statistics:</b> Direct access to Market Cap, Volume (24h), Circulating Supply, and Liquidity metrics.</li>
-  <li><b>Community Verification:</b> Integrated official brand links (X, Telegram, Website) and Contract Address "Copy-to-Clipboard" functionality.</li>
-  <li><b>Live Trade Feed:</b> Real-time visualization of buy/sell pressure to help users detect artificial volume or wash-trading patterns.</li>
-</ul>
-
----
-
-### 📸 App Architecture & Preview
+#### 1. Secure Onboarding & Authentication
+Multi-layered flow featuring **JWT security** and **4-digit Email OTP** verification.
 <div align="center">
-  <p><i>Live Market Analytics & Coin Details</i></p>
-  <img src="./assets/images/Screenshot_20260124-062201~2.png" width="250" alt="Live Charting and Market Data" />
-  <img src="./assets/images/Screenshot_20260113-090929.png" width="250" alt="Coin Security Details" />
-  <br />
-  <p><i>Authentication Flow & AI-Driven Signals</i></p>
-  <img src="./assets/images/Screenshot_20251215-153122.png" width="250" alt="JWT & OTP Verification" />
+  <img src="./assets/images/Screenshot_20251204-025109.png" width="200" alt="Onboarding Screen" />
+  <img src="./assets/images/Screenshot_20251129-093513.png" width="200" alt="Register Screen" />
+  <img src="./assets/images/Screenshot_20251129-094259.png" width="200" alt="Login Screen" />
+</div>
+
+#### 2. Transparency Dashboard
+Real-time market tracking for BTC, ETH, SOL, and emerging memecoins. Includes **Live Trade** feeds and interactive **Skia charts** with multi-timeframe support.
+<div align="center">
+  <img src="./assets/images/Screenshot_20260124-062201.png" width="250" alt="Home Screen Market Data" />
   <img src="./assets/images/Screenshot_20251204-025117.png" width="250" alt="AI Market Signals" />
 </div>
 
-<hr />
+#### 3. Coin Analytics & Anti-Rug Logic
+The security hub for every asset, monitoring developer liquidity locks and contract renouncements.
+<div align="center">
+  <img src="./assets/images/Screenshot_20260113-090929.png" width="250" alt="Coin Security Details" />
+  <img src="./assets/images/Screenshot_20251215-153122.png" width="250" alt="Security Verification" />
+</div>
+
+---
+
+### 📊 System Architecture
+
+
+Crypsnip utilizes a decoupled architecture to maintain high availability during peak market volatility. The Spring Boot backend manages heavy lifting like security audits and rate limiting, while the React Native frontend handles smooth data visualization.
+
+---
 
 <div align="center">
   <p>Developed by <b>Sedi Samuel</b></p>
   <p>Computer Science Student | Covenant University</p>
-  <p><i>Building for a more transparent decentralized future.</i></p>
 </div>
