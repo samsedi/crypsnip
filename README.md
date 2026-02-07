@@ -52,3 +52,4 @@ Crypsnip utilizes a decoupled architecture to maintain high availability during 
   <p>Developed by <b>Sedi Samuel</b></p>
   <p>Computer Science Student | Covenant University</p>
 </div>
+⚠️ work is still ongoing 
