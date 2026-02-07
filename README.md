@@ -35,8 +35,7 @@ Real-time tracking for BTC, ETH, SOL, and emerging memecoins with live trade fee
 | :---: | :---: |
 | <img src="./assets/images/Screenshot_20260124-062201.png" width="300" /> | <img src="./assets/images/Screenshot_20251204-025117.png" width="300" /> |
 
-#### 3. Coin Analytics & Verification
-Core infrastructure for monitoring developer liquidity locks and contract renouncements to flag high-risk launches.
+
 
 | Security Verification | Email OTP Flow |
 | :---: | :---: |
